@@ -4,8 +4,8 @@ import plotly.express as px
 import requests
 
 # ---------------------- 1. 환경 설정 및 API 키 ----------------------
-# 발급받은 실제 API 키를 여기에 적용했습니다.
-API_KEY = "5947da93998ba5bb6ccef19757a8633b" 
+# 새로운 API 키를 여기에 적용했습니다.
+API_KEY = "4ac968497ca2e23e5be43af605f80058" 
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
 # ---------------------- 2. API 통신 함수 ----------------------
