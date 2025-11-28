@@ -4,33 +4,35 @@ import plotly.express as px
 import requests
 
 # ---------------------- 1. 환경 설정 및 API 키 ----------------------
-# 새로운 API 키를 여기에 적용했습니다.
 API_KEY = "4ac968497ca2e23e5be43af605f80058" 
+# City ID 기반 요청을 위해 URL을 조금 변경합니다.
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
+# 서울의 City ID
+SEOUL_CITY_ID = 1835848
 
-# ---------------------- 2. API 통신 함수 ----------------------
-def get_weather_data(city):
-    """지정된 도시의 현재 날씨 데이터를 OpenWeatherMap에서 가져옵니다."""
+# ---------------------- 2. API 통신 함수 (ID 기반으로 변경) ----------------------
+def get_weather_data_by_id(city_id):
+    """지정된 도시 ID의 현재 날씨 데이터를 OpenWeatherMap에서 가져옵니다."""
     params = {
-        'q': city,
+        'id': city_id, # <-- 도시 이름을 쓰는 'q' 대신 'id'를 사용합니다.
         'appid': API_KEY,
-        'units': 'metric', # 온도를 섭씨(Celsius)로 받기 위함
-        'lang': 'kr' # 언어를 한국어로 설정 (가능한 경우)
+        'units': 'metric', 
+        'lang': 'kr' 
     }
     response = requests.get(BASE_URL, params=params)
     
     if response.status_code == 200:
         return response.json()
     else:
-        # 오류 처리 (예: 도시 이름이 잘못되었거나 API 키 문제)
-        print(f"Error fetching data: {response.status_code}")
+        print(f"Error fetching data by ID: {response.status_code}")
         return None
 
-# ---------------------- 3. Streamlit 인터페이스 함수 ----------------------
+# ---------------------- 3. Streamlit 인터페이스 함수 (변경 없음) ----------------------
+# (display_weather 함수는 이전과 동일합니다.)
+
 def display_weather(data):
     """가져온 날씨 데이터를 Streamlit에 표시하고 시각화합니다."""
     
-    # 주요 정보 표시
     st.header(f"📍 {data['name']}의 현재 날씨")
     
     col1, col2, col3 = st.columns(3)
@@ -44,7 +46,6 @@ def display_weather(data):
 
     st.markdown(f"**날씨 상태:** {data['weather'][0]['description'].capitalize()}")
     
-    # 간단한 시각화 (기온 바 그래프)
     temp_df = pd.DataFrame({
         '측정 항목': ['현재 기온', '최고 기온', '최저 기온'],
         '값': [data['main']['temp'], data['main']['temp_max'], data['main']['temp_min']]
@@ -56,20 +57,26 @@ def display_weather(data):
                  color_discrete_sequence=['red', 'darkred', 'blue'])
     st.plotly_chart(fig, use_container_width=True)
 
-# ---------------------- 4. 메인 앱 실행 로직 ----------------------
-st.title("🌎 실시간 도시별 날씨 정보 앱")
+
+# ---------------------- 4. 메인 앱 실행 로직 (ID 요청으로 변경) ----------------------
+st.title("🌎 실시간 도시별 날씨 정보 앱 (City ID)")
 st.sidebar.header("설정")
 
-city_name = st.sidebar.text_input("도시 이름을 입력하세요 (예: Seoul, Tokyo)", "Seoul")
+# City ID 입력 필드 추가 (기본값 서울 ID)
+city_id_input = st.sidebar.text_input("도시 ID를 입력하세요 (예: 서울: 1835848)", str(SEOUL_CITY_ID))
 
 if st.sidebar.button("날씨 정보 가져오기"):
-    if city_name:
-        with st.spinner('날씨 데이터 로딩 중...'):
-            weather_data = get_weather_data(city_name)
+    try:
+        # 입력된 문자열을 정수로 변환 시도
+        selected_city_id = int(city_id_input)
+        
+        with st.spinner(f'ID {selected_city_id}의 날씨 데이터 로딩 중...'):
+            weather_data = get_weather_data_by_id(selected_city_id) # ID 기반 함수 호출
             
         if weather_data:
             display_weather(weather_data)
         else:
-            st.error(f"'{city_name}'에 대한 날씨 정보를 가져올 수 없습니다. 도시 이름을 다시 확인하거나 API 키를 점검하세요.")
-    else:
-        st.warning("도시 이름을 입력해 주세요.")
+            st.error(f"ID {selected_city_id}에 대한 날씨 정보를 가져올 수 없습니다. ID 또는 API 키를 점검하세요.")
+            
+    except ValueError:
+        st.error("유효한 숫자 형태의 City ID를 입력해 주세요.")
