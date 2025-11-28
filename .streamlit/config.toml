@@ -1,0 +1,21 @@
+[theme]
+# 앱의 강조 색상을 Streamlit 빨간색으로 변경
+primaryColor="#FF4B4B" 
+# 배경색
+backgroundColor="#FFFFFF"
+# 사이드바 등의 컨테이너 색상
+secondaryBackgroundColor="#F0F2F6" 
+# 기본 텍스트 색상
+textColor="#262730"
+# 글꼴 설정
+font="sans serif"
+
+[server]
+# 앱이 실행될 포트 번호 지정 (선택 사항)
+# port = 8080 
+# 앱 실행 시 브라우저 자동 열림 방지 (선택 사항)
+# headless = true 
+
+[client]
+# Streamlit Cloud에서 나타나는 기본 위젯(메뉴) 숨기기 (깔끔한 UI를 위해 추천)
+showSidebarNavigation = false
