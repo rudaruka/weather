@@ -5,7 +5,7 @@ import requests
 
 # ---------------------- 1. API 통신 함수 ----------------------
 # **주의: YOUR_API_KEY를 실제 발급받은 키로 교체해야 합니다.**
-API_KEY = "YOUR_API_KEY" 
+API_KEY = "5947da93998ba5bb6ccef19757a8633b" 
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
 def get_weather_data(city):
