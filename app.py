@@ -3,31 +3,32 @@ import pandas as pd
 import plotly.express as px
 import requests
 
-# ---------------------- 1. API 통신 함수 ----------------------
-# **주의: YOUR_API_KEY를 실제 발급받은 키로 교체해야 합니다.**
+# ---------------------- 1. 환경 설정 및 API 키 ----------------------
+# 발급받은 실제 API 키를 여기에 적용했습니다.
 API_KEY = "5947da93998ba5bb6ccef19757a8633b" 
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
+# ---------------------- 2. API 통신 함수 ----------------------
 def get_weather_data(city):
     """지정된 도시의 현재 날씨 데이터를 OpenWeatherMap에서 가져옵니다."""
     params = {
         'q': city,
         'appid': API_KEY,
-        'units': 'metric', 
-        'lang': 'kr' 
+        'units': 'metric', # 온도를 섭씨(Celsius)로 받기 위함
+        'lang': 'kr' # 언어를 한국어로 설정 (가능한 경우)
     }
     response = requests.get(BASE_URL, params=params)
     
     if response.status_code == 200:
         return response.json()
     else:
-        # 오류 처리
+        # 오류 처리 (예: 도시 이름이 잘못되었거나 API 키 문제)
         print(f"Error fetching data: {response.status_code}")
         return None
 
-# ---------------------- 2. Streamlit 인터페이스 함수 ----------------------
+# ---------------------- 3. Streamlit 인터페이스 함수 ----------------------
 def display_weather(data):
-    """가져온 날씨 데이터를 Streamlit에 표시합니다."""
+    """가져온 날씨 데이터를 Streamlit에 표시하고 시각화합니다."""
     
     # 주요 정보 표시
     st.header(f"📍 {data['name']}의 현재 날씨")
@@ -43,7 +44,7 @@ def display_weather(data):
 
     st.markdown(f"**날씨 상태:** {data['weather'][0]['description'].capitalize()}")
     
-    # 간단한 시각화 (예: 온도/습도 바 그래프)
+    # 간단한 시각화 (기온 바 그래프)
     temp_df = pd.DataFrame({
         '측정 항목': ['현재 기온', '최고 기온', '최저 기온'],
         '값': [data['main']['temp'], data['main']['temp_max'], data['main']['temp_min']]
@@ -55,7 +56,7 @@ def display_weather(data):
                  color_discrete_sequence=['red', 'darkred', 'blue'])
     st.plotly_chart(fig, use_container_width=True)
 
-# ---------------------- 3. 메인 앱 실행 로직 ----------------------
+# ---------------------- 4. 메인 앱 실행 로직 ----------------------
 st.title("🌎 실시간 도시별 날씨 정보 앱")
 st.sidebar.header("설정")
 
